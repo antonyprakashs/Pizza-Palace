@@ -13,9 +13,8 @@ exports.createPizza = async (req, res) => {
   try {
     const { name, description, price, category, imageUrl } = req.body;
     
-    const finalImageUrl = req.file 
-      ? `http://127.0.0.1:5000/uploads/${req.file.filename}` 
-      : imageUrl;
+    // 🍕 CLOUDINARY UPDATE: Grab the live URL from req.file.path
+    const finalImageUrl = req.file ? req.file.path : imageUrl;
 
     const newPizza = new Pizza({
       name,
@@ -42,8 +41,9 @@ exports.updatePizza = async (req, res) => {
       updateData.isAvailable = isAvailable;
     }
 
+    // 🍕 CLOUDINARY UPDATE: Grab the live URL from req.file.path
     if (req.file) {
-      updateData.imageUrl = `http://127.0.0.1:5000/uploads/${req.file.filename}`;
+      updateData.imageUrl = req.file.path;
     } else if (imageUrl) {
       updateData.imageUrl = imageUrl;
     }
