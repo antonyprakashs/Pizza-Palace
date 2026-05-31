@@ -30,6 +30,35 @@ app.use(helmet({
 }));
 app.use(morgan('dev'));
 
+// MongoDB Serverless Connection Pooling
+let isConnected = false; 
+
+const connectDB = async () => {
+  if (isConnected) {
+    return;
+  }
+
+  console.log('=> Creating a new database connection');
+  try {
+    const db = await mongoose.connect(process.env.MONGO_URI);
+    isConnected = db.connections[0].readyState; 
+    console.log('✅ MongoDB Connected');
+  } catch (error) {
+    console.error('❌ DB Connection Error:', error);
+    throw error;
+  }
+};
+
+// Middleware to ensure DB connection is ready before handling API routes
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/pizzas', pizzaRoutes);
 app.use('/api/orders', orderRoutes);
@@ -41,10 +70,6 @@ app.use('/uploads', express.static('uploads', {
 }));
 
 app.use(errorHandler);
-
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ MongoDB Connected'))
-  .catch((err) => console.error('❌ DB Connection Error:', err));
 
 if (process.env.NODE_ENV !== 'production') {
   app.listen(process.env.PORT || 5000, () => {
