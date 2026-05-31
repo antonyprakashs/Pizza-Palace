@@ -12,9 +12,19 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
-
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:3000' }));
+
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://pizza-palace-ten.vercel.app",
+    /https:\/\/pizza-palace-.*\.vercel\.app$/
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
