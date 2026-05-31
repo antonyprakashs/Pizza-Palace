@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import API from "./axiosConfig";
+import API from "../axiosConfig";
 import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom'; 
 import toast from 'react-hot-toast';
@@ -15,7 +15,7 @@ function Home({ searchQuery = '' }) {
     const fetchPizzas = async () => {
       try {
     const res = await API.get("/api/pizzas");        
-      setPizzas(response.data.pizzas);
+      setPizzas(res.data.pizzas);
       } catch (error) {
         console.error('Error fetching pizzas:', error);
         toast.error('Could not load menu.');

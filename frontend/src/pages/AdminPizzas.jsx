@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import API from '../axiosConfig';
+import API from '../axiosConfig'; 
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 function AdminPizzas() {
-  // ... all state stays the same
+  const { token } = useAuth();
+  const [pizzas, setPizzas] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '', description: '', price: '', category: '', imageUrl: ''
+  });
+  const [imageFile, setImageFile] = useState(null);
 
   const fetchPizzas = async () => {
     try {
@@ -15,8 +22,35 @@ function AdminPizzas() {
     }
   };
 
+  useEffect(() => {
+    fetchPizzas();
+  }, []);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const data = new FormData();
+    data.append('name', formData.name);
+    data.append('description', formData.description);
+    data.append('price', formData.price);
+    data.append('category', formData.category);
+    data.append('imageUrl', formData.imageUrl);
+    if (imageFile) data.append('image', imageFile);
+
+    const apiConfig = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    };
+
     try {
       if (isEditing) {
         await API.put(`/api/pizzas/${editId}`, data, apiConfig);
@@ -27,11 +61,11 @@ function AdminPizzas() {
           toast.error('Please upload a file or provide an image web URL!');
           return;
         }
-        await API.post('/api/pizzas', data, apiConfig);
+        await API.post('/api/pizzas', data, apiConfig); 
         toast.success('Pizza published successfully!');
         setFormData({ name: '', description: '', price: '', category: '', imageUrl: '' });
         setImageFile(null);
-        if(document.getElementById('imageInput')) document.getElementById('imageInput').value = '';
+        if (document.getElementById('imageInput')) document.getElementById('imageInput').value = '';
       }
       fetchPizzas();
     } catch (error) {
@@ -40,9 +74,31 @@ function AdminPizzas() {
     }
   };
 
+  const handleEditClick = (pizza) => {
+    setIsEditing(true);
+    setEditId(pizza._id);
+    setFormData({
+      name: pizza.name,
+      description: pizza.description,
+      price: pizza.price,
+      category: pizza.category,
+      imageUrl: pizza.imageUrl || ''
+    });
+    setImageFile(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditId(null);
+    setFormData({ name: '', description: '', price: '', category: '', imageUrl: '' });
+    setImageFile(null);
+    if (document.getElementById('imageInput')) document.getElementById('imageInput').value = '';
+  };
+
   const handleToggleAvailability = async (id, currentAvailability) => {
     try {
-      await API.put(
+      await API.put(                                   
         `/api/pizzas/${id}`,
         { isAvailable: !currentAvailability },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -57,7 +113,7 @@ function AdminPizzas() {
   const handleDeletePizza = async (id, name) => {
     if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
       try {
-        await API.delete(`/api/pizzas/${id}`, {
+        await API.delete(`/api/pizzas/${id}`, {       
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success(`${name} removed permanently.`);

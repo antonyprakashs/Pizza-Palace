@@ -15,7 +15,7 @@ function Signup() {
 const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await API.post("/api/auth/register", ...formData);
+      await API.post("/api/auth/register",formData);
       
       toast.success('Account created successfully! Please login. 🍕', {
         style: { background: '#10B981', color: '#fff' }

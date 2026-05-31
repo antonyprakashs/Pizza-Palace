@@ -5,7 +5,7 @@ import API from "../axiosConfig";
 import toast from 'react-hot-toast';
 
 function Cart() {
-  const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
+  const { cart, addToCart, decreaseQuantity, removeFromCart, clearCart } = useCart();
   const navigate = useNavigate();
   const [address, setAddress] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -98,7 +98,7 @@ function Cart() {
             <div className="flex items-center justify-between w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-50">
               <div className="flex items-center bg-gray-50 border border-gray-100 rounded-xl px-2 py-1">
                 <button 
-                  onClick={() => updateQuantity(item.pizza._id, item.quantity - 1)}
+                  onClick={() => decreaseQuantity(item.pizza._id)}
                   className="text-gray-500 hover:text-gray-800 font-bold px-2 py-0.5 text-sm select-none"
                   disabled={item.quantity <= 1}
                 >
@@ -108,7 +108,7 @@ function Cart() {
                   {item.quantity}
                 </span>
                 <button 
-                  onClick={() => updateQuantity(item.pizza._id, item.quantity + 1)}
+                  onClick={() => addToCart(item.pizza._id)}
                   className="text-gray-500 hover:text-gray-800 font-bold px-2 py-0.5 text-sm select-none"
                 >
                   +
