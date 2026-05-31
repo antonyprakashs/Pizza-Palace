@@ -14,17 +14,23 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('pizza_cart', JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (pizza) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.pizza._id === pizza._id);
-      if (existingItem) {
-        return prevCart.map((item) =>
-          item.pizza._id === pizza._id ? { ...item, quantity: item.quantity + 1, qty: item.qty + 1 } : item
-        );
-      }
-      return [...prevCart, { pizza, quantity: 1, qty: 1 }];
-    });
-  };
+  const addToCart = (pizzaOrItem) => {
+  const actualPizza = pizzaOrItem.pizza ? pizzaOrItem.pizza : pizzaOrItem;
+
+  setCart((prevCart) => {
+    const existingItem = prevCart.find((item) => item.pizza._id === actualPizza._id);
+    
+    if (existingItem) {
+      return prevCart.map((item) =>
+        item.pizza._id === actualPizza._id 
+          ? { ...item, quantity: item.quantity + 1, qty: item.qty + 1 } 
+          : item
+      );
+    }
+    
+    return [...prevCart, { pizza: actualPizza, quantity: 1, qty: 1 }];
+  });
+};
 
   const decreaseQuantity = (pizzaId) => {
     setCart((prevCart) => {
