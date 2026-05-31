@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from "../axiosConfig";
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 function Signup() {
@@ -15,7 +15,7 @@ function Signup() {
 const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://127.0.0.1:5000/api/auth/register', formData);
+      await API.post("/api/auth/register", ...formData);
       
       toast.success('Account created successfully! Please login. 🍕', {
         style: { background: '#10B981', color: '#fff' }

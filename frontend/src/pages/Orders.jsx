@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import API from "../axiosConfig";
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ function Orders() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/api/orders/my', {
+        const response = await API.get('/api/orders/my', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

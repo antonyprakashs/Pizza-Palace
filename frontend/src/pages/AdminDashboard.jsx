@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import API from '../axiosConfig';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -11,7 +11,7 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchAllOrders = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/api/orders', {
+        const response = await API.get('/api/orders', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setOrders(response.data.orders);
@@ -27,9 +27,10 @@ function AdminDashboard() {
       fetchAllOrders();
     }
   }, [token]);
+
   const refreshOrders = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:5000/api/orders', {
+      const response = await API.get('/api/orders', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOrders(response.data.orders);
@@ -40,7 +41,7 @@ function AdminDashboard() {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      await axios.get(`http://127.0.0.1:5000/api/orders/${orderId}/status/${newStatus}`, {
+      await API.get(`/api/orders/${orderId}/status/${newStatus}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
