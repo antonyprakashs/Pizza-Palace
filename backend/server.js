@@ -43,10 +43,12 @@ app.use('/uploads', express.static('uploads', {
 app.use(errorHandler);
 
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('✅ MongoDB Connected');
-    app.listen(process.env.PORT, () => {
-      console.log(`🚀 Server running on port ${process.env.PORT}`);
-    });
-  })
+  .then(() => console.log('✅ MongoDB Connected'))
   .catch((err) => console.error('❌ DB Connection Error:', err));
+
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(process.env.PORT || 5000, () => {
+    console.log(`🚀 Server running on port ${process.env.PORT || 5000}`);
+  });
+}
+module.exports = app;
