@@ -13,24 +13,42 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('pizza_cart', JSON.stringify(cart));
   }, [cart]);
+  const addToCart = (payload) => {
+    setCart((prevCart) => {
+      let targetId;
+      let pizzaData = null;
 
-  const addToCart = (pizzaOrItem) => {
-  const actualPizza = pizzaOrItem.pizza ? pizzaOrItem.pizza : pizzaOrItem;
+      if (typeof payload === 'string') {
+        targetId = payload;
+      } else if (payload && payload.pizza && payload.pizza._id) {
+        targetId = payload.pizza._id;
+        pizzaData = payload.pizza;
+      } else if (payload && payload._id) {
+        targetId = payload._id;
+        pizzaData = payload;
+      } else {
+        console.error("addToCart received invalid payload:", payload);
+        return prevCart;
+      }
 
-  setCart((prevCart) => {
-    const existingItem = prevCart.find((item) => item.pizza._id === actualPizza._id);
-    
-    if (existingItem) {
-      return prevCart.map((item) =>
-        item.pizza._id === actualPizza._id 
-          ? { ...item, quantity: item.quantity + 1, qty: item.qty + 1 } 
-          : item
-      );
-    }
-    
-    return [...prevCart, { pizza: actualPizza, quantity: 1, qty: 1 }];
-  });
-};
+      const existingItem = prevCart.find((item) => item.pizza._id === targetId);
+
+      if (existingItem) {
+        // Exists: Just increment
+        return prevCart.map((item) =>
+          item.pizza._id === targetId
+            ? { ...item, quantity: item.quantity + 1, qty: item.qty + 1 }
+            : item
+        );
+      }
+
+      if (pizzaData) {
+        return [...prevCart, { pizza: pizzaData, quantity: 1, qty: 1 }];
+      }
+
+      return prevCart;
+    });
+  };
 
   const decreaseQuantity = (pizzaId) => {
     setCart((prevCart) => {
